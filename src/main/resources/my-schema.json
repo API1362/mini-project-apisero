@@ -1,0 +1,95 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "array",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": [],
+    "examples": [
+        [
+            {
+                "EmpId": 123,
+                "EmpName": "John",
+                "EmpDesignation": "Software Engineer",
+                "EmpAge": 25
+            },
+            {
+                "EmpId": 125,
+                "EmpName": "Jocob",
+                "EmpDesignation": "Lead Engineer",
+                "EmpAge": 28
+            }
+        ]
+    ],
+    "additionalItems": true,
+    "items": {
+        "$id": "#/items",
+        "anyOf": [
+            {
+                "$id": "#/items/anyOf/0",
+                "type": "object",
+                "title": "The first anyOf schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": {},
+                "examples": [
+                    {
+                        "EmpId": 123,
+                        "EmpName": "John",
+                        "EmpDesignation": "Software Engineer",
+                        "EmpAge": 25
+                    }
+                ],
+                "required": [
+                    "EmpId",
+                    "EmpName",
+                    "EmpDesignation",
+                    "EmpAge"
+                ],
+                "properties": {
+                    "EmpId": {
+                        "$id": "#/items/anyOf/0/properties/EmpId",
+                        "description": "An explanation about the purpose of this instance.",
+                        "examples": [
+                            123
+                        ],
+                        "title": "The EmpId schema",
+                        "type": "integer"
+                    },
+                    "EmpName": {
+                        "$id": "#/items/anyOf/0/properties/EmpName",
+                        "description": "An explanation about the purpose of this instance.",
+                        "examples": [
+                            "John"
+                        ],
+                        "title": "The EmpName schema",
+                        "type": "string"
+                    },
+                    "EmpDesignation": {
+                        "$id": "#/items/anyOf/0/properties/EmpDesignation",
+                        "description": "An explanation about the purpose of this instance.",
+                        "enum": [
+                            "Software Engineer",
+                            "Lead Engineer",
+                            "Solution Architect"
+                        ],
+                        "examples": [
+                            "Software Engineer"
+                        ],
+                        "title": "The EmpDesignation schema",
+                        "type": "string"
+                    },
+                    "EmpAge": {
+                        "$id": "#/items/anyOf/0/properties/EmpAge",
+                        "description": "An explanation about the purpose of this instance.",
+                        "examples": [
+                            25
+                        ],
+                        "title": "The EmpAge schema",
+                        "type": "integer"
+                    }
+                },
+                "additionalProperties": true
+            }
+        ]
+    }
+}
