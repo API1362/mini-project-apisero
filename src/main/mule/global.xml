@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="254450d0-1d68-43f8-8cf2-cfd0e16291c3" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="9578c623-9c82-4f78-b84e-dc59b00cba71" file="config.yaml" />
+	<file:config name="File_Config" doc:name="File Config" doc:id="0380cafb-7798-4da5-abdc-c0fb0e01b31d" >
+		<file:connection workingDir="C:\Projects\MiniPro" />
+	</file:config>
+	<configuration doc:name="Configuration" doc:id="2208a1bc-0cce-482d-b663-97116db29071" defaultErrorHandler-ref="globalError_Handler" />
+	<error-handler name="globalError_Handler" doc:id="3950bebd-bd1e-4a7f-a9da-5ac0457c76ef" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="499901a1-17e0-49a8-a68f-0ad6a28b1374" type="ANY">
+			<logger level="INFO" doc:name="Logger" doc:id="8b8c48fb-f9d8-4c16-a8ad-ae6930b8b880" message="#[error.description]"/>
+		</on-error-propagate>
+	</error-handler>
+</mule>
