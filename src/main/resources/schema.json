@@ -1,0 +1,105 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "array",
+    "title": "The root schema",
+    "description": "The root schema comprises the entire JSON document.",
+    "default": [],
+    "examples": [
+        [
+            {
+                "E_id": 1,
+                "E_name": "Napoleon",
+                "E_age": 32,
+                "E_designation": "Legal"
+            },
+            {
+                "E_id": 2,
+                "E_name": "Gale",
+                "E_age": 47,
+                "E_designation": "Product Management"
+            }
+        ]
+    ],
+    "additionalItems": true,
+    "items": {
+        "$id": "#/items",
+        "anyOf": [
+            {
+                "$id": "#/items/anyOf/0",
+                "type": "object",
+                "title": "The first anyOf schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": {},
+                "examples": [
+                    {
+                        "E_id": 1,
+                        "E_name": "Napoleon",
+                        "E_age": 32,
+                        "E_designation": "Legal"
+                    }
+                ],
+                "required": [
+                    "E_id",
+                    "E_name",
+                    "E_age",
+                    "E_designation"
+                ],
+                "properties": {
+                    "E_id": {
+                        "$id": "#/items/anyOf/0/properties/E_id",
+                        "default": 0,
+                        "description": "An explanation about the purpose of this instance.",
+                        "examples": [
+                            1
+                        ],
+                        "maximum": 9999,
+                        "title": "The E_id schema",
+                        "minimum": 0,
+                        "type": "integer"
+                    },
+                    "E_name": {
+                        "$id": "#/items/anyOf/0/properties/E_name",
+                        "default": "",
+                        "description": "An explanation about the purpose of this instance.",
+                        "examples": [
+                            "Napoleon"
+                        ],
+                        "title": "The E_name schema",
+                        "maxLength": 20,
+                        "type": "string"
+                    },
+                    "E_age": {
+                        "$id": "#/items/anyOf/0/properties/E_age",
+                        "default": 0,
+                        "description": "An explanation about the purpose of this instance.",
+                        "examples": [
+                            32
+                        ],
+                        "maximum": 75,
+                        "minimum": 25,
+                        "title": "The E_age schema",
+                        "type": "integer"
+                    },
+                    "E_designation": {
+                        "$id": "#/items/anyOf/0/properties/E_designation",
+                        "default": "",
+                        "description": "An explanation about the purpose of this instance.",
+                        "enum": [
+                            "Software Engineer",
+                            "Solution Architect",
+                            "Lead Engineer",
+                            "Manager"
+                        ],
+                        "examples": [
+                            "Legal"
+                        ],
+                        "title": "The E_designation schema",
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": true
+            }
+        ]
+    }
+}

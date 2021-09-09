@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+	<flow name="fileconnectorFlow" doc:id="d4e1b4ae-ac3d-4725-8fba-8fbbde644233" >
+		<file:listener doc:name="On New or Updated File" doc:id="5b1510b0-6c68-45c3-bff1-a1766878bd0f" config-ref="File_Config" directory="input" moveToDirectory="processed">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+			<file:matcher filenamePattern="{*.csv,*.json}" />
+		</file:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="4d4663bd-bbbd-43f5-bdab-4f235cd43bb1" />
+		<choice doc:name="Choice" doc:id="14b2b554-a938-4041-be8e-d8d16c608ddb" >
+			<when expression='#[payload.^mediaType contains "text/json"]'>
+				<set-variable value=".json" doc:name="Set Variable" doc:id="7ab2b955-053a-4f37-82b6-e12c384e3444" variableName="file_ext"/>
+				<flow-ref doc:name="Flow Reference" doc:id="b5fb6a51-79c0-441c-ad9a-e95e6be164fa" name="validateFlow"/>
+			</when>
+			<when expression='payload.^mediaType contains "text/csv"'>
+				<set-variable value=".csv" doc:name="Set Variable" doc:id="ed4d44a8-7eb6-4b79-a259-34198644e950" variableName="file_ext"/>
+				<ee:transform doc:name="Transform Message" doc:id="d7b38df4-bf94-4c11-a4eb-1bcf9c2c8bbe">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map(object, index)-> {
+	E_id : object.E_id as Number,
+	E_name : object.E_name as String,
+	E_age : object.E_age as Number,
+	E_designation : object.E_designation as String
+	
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<flow-ref doc:name="Flow Reference" doc:id="9e9382d1-2f9c-4f36-8ae2-5c832bf6198f" name="validateFlow"/>
+			</when>
+			<otherwise >
+				<set-payload value='"Neither CSV or JSON format files"' doc:name="Set Payload" doc:id="c900e3dd-4cb9-4398-96e1-bda0a32565dc" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="1673f751-5b26-4411-b456-88910a3b118b" message="#[payload]"/>
+	</flow>
+	<flow name="validateFlow" doc:id="57f2bea4-b30f-4edf-9956-e2613f7462c3" >
+		<json:validate-schema doc:name="Validate schema" doc:id="cd98df7a-8d85-4997-878f-1a4b3d2885be" schema="schema.json"/>
+		<choice doc:name="Choice" doc:id="e2acd0dd-7a77-4456-b6c2-98439b5973db" >
+			<when expression='#[vars.file_ext== ".json"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="284c407f-fdd6-4ef7-8d08-c5ee3f61881c" />
+				<flow-ref doc:name="Flow Reference" doc:id="6f15d154-10a4-49c4-9909-a4529aca1e98" name="write_json" />
+			</when>
+			<otherwise>
+				<flow-ref doc:name="Flow Reference" doc:id="32245fd7-c831-409e-833d-089932536bac" name="write_csv" />
+			</otherwise>
+		</choice>
+		<error-handler>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fddd59a2-afb8-48f7-ba4a-6f3f80293809" type="JSON:INVALID_INPUT_JSON, JSON:INVALID_SCHEMA, JSON:SCHEMA_NOT_FOUND, JSON:SCHEMA_NOT_HONOURED">
+				<file:write doc:name="Write" doc:id="d02fc914-f4f8-4187-ba97-c025d2851f01" config-ref="File_Config" path='#["errors/" ++ attributes.fileName]' mode="APPEND">
+					<file:content ><![CDATA[#[error.description]]]></file:content>
+				</file:write>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="write_json" doc:id="2f060c97-55aa-47bc-b966-6d98aad695b8" >
+		<file:write doc:name="Write" doc:id="5f69bcb1-8eea-47c3-9ca3-0abb6582b07e" config-ref="File_Config" path='#[import * from dw::core::Strings  --- "output/"++ substringBefore(attributes.fileName,".") as String ++ "_processed." ++ vars.file_ext as String]'/>
+		<logger level="INFO" doc:name="Logger" doc:id="0ce08601-a5e3-4b8a-b1e3-ac6af6dc9229" message="#[payload]"/>
+	</flow>
+	<flow name="write_csv" doc:id="c7f37de3-c6d2-4b62-acfb-8ae86bc36bef" >
+		<ee:transform doc:name="Transform Message" doc:id="48d68853-c9cb-4d33-b8b7-ead87c5bc72e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<file:write doc:name="Write" doc:id="9cc12097-2299-4212-88b1-001c2b0ad3ba" config-ref="File_Config" path='#[import * from dw::core::Strings  --- "output/"++ substringBefore(attributes.fileName,".") as String ++ "_processed" ++ vars.file_ext as String]' />
+		<logger level="INFO" doc:name="Logger" doc:id="2d0204ae-9e4f-42be-9764-3fa3e3eed30a" message="#[payload]" />
+	</flow>
+
+	</mule>

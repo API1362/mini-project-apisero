@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="1d394db2-2790-4bbf-b64c-0e9023dab2f4" file="config.yaml" />
+	<file:config name="File_Config" doc:name="File Config" doc:id="51318440-954c-4d64-9447-9455c67122fd" >
+		<file:connection workingDir="C:\Users\tejasgowda\AnypointStudio\fileconnector" />
+	</file:config>
+</mule>
